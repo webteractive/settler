@@ -56,6 +56,24 @@ apt-get install -y --allow-downgrades --allow-remove-essential --allow-change-he
 php7.1-cli php7.1-dev php7.1-pgsql php7.1-sqlite3 php7.1-gd php7.1-curl php7.1-imap php7.1-mysql \
 php7.1-mbstring php7.1-xml php7.1-zip php7.1-bcmath php7.1-soap php7.1-intl php7.1-readline php7.1-ldap
 
+# PHP 7.0
+apt-get install -y --allow-downgrades --allow-remove-essential --allow-change-held-packages \
+php7.0-cli php7.0-dev \
+php7.0-pgsql php7.0-sqlite3 php7.0-gd \
+php7.0-curl php7.0-memcached \
+php7.0-imap php7.0-mysql php7.0-mbstring \
+php7.0-xml php7.0-zip php7.0-bcmath php7.0-soap \
+php7.0-intl php7.0-readline
+
+# PHP 5.6
+apt-get install -y --allow-downgrades --allow-remove-essential --allow-change-held-packages \
+php5.6-cli php5.6-dev \
+php5.6-pgsql php5.6-sqlite3 php5.6-gd \
+php5.6-curl php5.6-memcached \
+php5.6-imap php5.6-mysql php5.6-mbstring \
+php5.6-xml php5.6-zip php5.6-bcmath php5.6-soap \
+php5.6-intl php5.6-readline php5.6-mcrypt
+
 update-alternatives --set php /usr/bin/php7.3
 update-alternatives --set php-config /usr/bin/php-config7.3
 update-alternatives --set phpize /usr/bin/phpize7.3
@@ -94,7 +112,7 @@ sudo sed -i "s/;date.timezone.*/date.timezone = UTC/" /etc/php/7.1/cli/php.ini
 # Install Nginx & PHP-FPM
 
 apt-get install -y --allow-downgrades --allow-remove-essential --allow-change-held-packages \
-nginx php7.1-fpm php7.3-fpm php7.2-fpm
+nginx php7.1-fpm php7.3-fpm php7.2-fpm php7.0-fpm php5.6-fpm
 
 rm /etc/nginx/sites-enabled/default
 rm /etc/nginx/sites-available/default
@@ -166,6 +184,28 @@ printf "openssl.cainfo = /etc/ssl/certs/ca-certificates.crt\n" | tee -a /etc/php
 printf "[curl]\n" | tee -a /etc/php/7.1/fpm/php.ini
 printf "curl.cainfo = /etc/ssl/certs/ca-certificates.crt\n" | tee -a /etc/php/7.1/fpm/php.ini
 
+sed -i "s/error_reporting = .*/error_reporting = E_ALL/" /etc/php/7.0/fpm/php.ini
+sed -i "s/display_errors = .*/display_errors = On/" /etc/php/7.0/fpm/php.ini
+sed -i "s/;cgi.fix_pathinfo=1/cgi.fix_pathinfo=0/" /etc/php/7.0/fpm/php.ini
+sed -i "s/memory_limit = .*/memory_limit = 512M/" /etc/php/7.0/fpm/php.ini
+sed -i "s/upload_max_filesize = .*/upload_max_filesize = 100M/" /etc/php/7.0/fpm/php.ini
+sed -i "s/post_max_size = .*/post_max_size = 100M/" /etc/php/7.0/fpm/php.ini
+sed -i "s/;date.timezone.*/date.timezone = UTC/" /etc/php/7.0/fpm/php.ini
+
+printf "[curl]\n" | tee -a /etc/php/7.0/fpm/php.ini
+printf "curl.cainfo = /etc/ssl/certs/ca-certificates.crt\n" | tee -a /etc/php/7.0/fpm/php.ini
+
+sed -i "s/error_reporting = .*/error_reporting = E_ALL/" /etc/php/5.6/fpm/php.ini
+sed -i "s/display_errors = .*/display_errors = On/" /etc/php/5.6/fpm/php.ini
+sed -i "s/;cgi.fix_pathinfo=1/cgi.fix_pathinfo=0/" /etc/php/5.6/fpm/php.ini
+sed -i "s/memory_limit = .*/memory_limit = 512M/" /etc/php/5.6/fpm/php.ini
+sed -i "s/upload_max_filesize = .*/upload_max_filesize = 100M/" /etc/php/5.6/fpm/php.ini
+sed -i "s/post_max_size = .*/post_max_size = 100M/" /etc/php/5.6/fpm/php.ini
+sed -i "s/;date.timezone.*/date.timezone = UTC/" /etc/php/5.6/fpm/php.ini
+
+printf "[curl]\n" | tee -a /etc/php/5.6/fpm/php.ini
+printf "curl.cainfo = /etc/ssl/certs/ca-certificates.crt\n" | tee -a /etc/php/5.6/fpm/php.ini
+
 # Disable XDebug On The CLI
 
 sudo phpdismod -s cli xdebug
@@ -220,10 +260,26 @@ sed -i "s/listen\.owner.*/listen.owner = vagrant/" /etc/php/7.1/fpm/pool.d/www.c
 sed -i "s/listen\.group.*/listen.group = vagrant/" /etc/php/7.1/fpm/pool.d/www.conf
 sed -i "s/;listen\.mode.*/listen.mode = 0666/" /etc/php/7.1/fpm/pool.d/www.conf
 
+sed -i "s/user = www-data/user = vagrant/" /etc/php/7.0/fpm/pool.d/www.conf
+sed -i "s/group = www-data/group = vagrant/" /etc/php/7.0/fpm/pool.d/www.conf
+
+sed -i "s/listen\.owner.*/listen.owner = vagrant/" /etc/php/7.0/fpm/pool.d/www.conf
+sed -i "s/listen\.group.*/listen.group = vagrant/" /etc/php/7.0/fpm/pool.d/www.conf
+sed -i "s/;listen\.mode.*/listen.mode = 0666/" /etc/php/7.0/fpm/pool.d/www.conf
+
+sed -i "s/user = www-data/user = vagrant/" /etc/php/5.6/fpm/pool.d/www.conf
+sed -i "s/group = www-data/group = vagrant/" /etc/php/5.6/fpm/pool.d/www.conf
+
+sed -i "s/listen\.owner.*/listen.owner = vagrant/" /etc/php/5.6/fpm/pool.d/www.conf
+sed -i "s/listen\.group.*/listen.group = vagrant/" /etc/php/5.6/fpm/pool.d/www.conf
+sed -i "s/;listen\.mode.*/listen.mode = 0666/" /etc/php/5.6/fpm/pool.d/www.conf
+
 service nginx restart
 service php7.2-fpm restart
 service php7.3-fpm restart
 service php7.1-fpm restart
+service php7.0-fpm restart
+service php5.6-fpm restart
 
 # Add Vagrant User To WWW-Data
 
